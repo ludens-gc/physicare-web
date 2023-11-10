@@ -1,25 +1,40 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
+import Button from "../Button";
 
-const NavBar = ({ isAuthenticated }) => {
+const NavBar = () => {
+  const { currentUser, logout } = useAuth();
+  const navigate = useNavigate();
+
+  async function handleLogout() {
+    try {
+      await logout();
+      navigate("/auth/log-in");
+    } catch (error) {
+      alert(`Erro ao fazer Logout!
+      Erro: ${error}`);
+    }
+  }
+
   return (
     <header>
       <nav className="navbar" role="navigation" aria-label="main navigation">
         <div className="navbar-brand">
-          <Link className="navbar-item" to="/">
+          <Link className="navbar-item" to={currentUser ? "/loged-in" : "/"}>
             <img src="/react.svg" />
           </Link>
         </div>
         <div className="navbar-menu">
           <div className="navbar-start">
-            {isAuthenticated ? (
+            {currentUser ? (
               <>
-                <Link className="navbar-item" to="/chat">
+                <Link className="navbar-item" to="/loged-in/chat">
                   Chat
                 </Link>
-                <Link className="navbar-item" to="/sheets">
+                <Link className="navbar-item" to="/loged-in/sheets">
                   Sheets
                 </Link>
-                <Link className="navbar-item" to="/search">
+                <Link className="navbar-item" to="/loged-in/search">
                   Search
                 </Link>
               </>
@@ -37,7 +52,13 @@ const NavBar = ({ isAuthenticated }) => {
           <div className="navbar-end">
             <div className="navbar-item">
               <div className="buttons">
-                {!isAuthenticated ? (
+                {currentUser ? (
+                  <>
+                    <Button className="button is-light" onClick={handleLogout}>
+                      Log Out
+                    </Button>
+                  </>
+                ) : (
                   <>
                     <Link className="button is-primary" to="/auth/sign-up">
                       Sign Up
@@ -46,8 +67,6 @@ const NavBar = ({ isAuthenticated }) => {
                       Log In
                     </Link>
                   </>
-                ) : (
-                  <></>
                 )}
               </div>
             </div>

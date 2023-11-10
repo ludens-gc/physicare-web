@@ -4,7 +4,7 @@ import NavBar from "../components/NavBar";
 const MainLayout = ({ user }) => {
   return (
     <>
-      <NavBar isAuthenticated={user} />
+      <NavBar />
       <main>
         <Outlet />
       </main>
