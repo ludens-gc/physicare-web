@@ -1,16 +1,21 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
-import Button from "../Button";
+import { useContext } from "react";
+import { AuthContext } from "../contexts/AuthContext";
+import { useSignOut } from "react-firebase-hooks/auth";
+import { auth } from "../config/firebase";
 
 const NavBar = () => {
-  const { currentUser, logout } = useAuth();
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [signOut, loading, error] = useSignOut(auth);
 
   async function handleLogout() {
     try {
-      await logout();
-      navigate("/auth/log-in");
-    } catch (error) {
+      const success = await signOut();
+      if (success) {
+        navigate("/log-in");
+      }
+    } catch (err) {
       alert(`Erro ao fazer Logout!
       Erro: ${error}`);
     }
@@ -20,21 +25,21 @@ const NavBar = () => {
     <header>
       <nav className="navbar" role="navigation" aria-label="main navigation">
         <div className="navbar-brand">
-          <Link className="navbar-item" to={currentUser ? "/loged-in" : "/"}>
+          <Link className="navbar-item" to="/">
             <img src="/react.svg" />
           </Link>
         </div>
         <div className="navbar-menu">
           <div className="navbar-start">
-            {currentUser ? (
+            {user ? (
               <>
-                <Link className="navbar-item" to="/loged-in/chat">
+                <Link className="navbar-item" to="/chat">
                   Chat
                 </Link>
-                <Link className="navbar-item" to="/loged-in/sheets">
+                <Link className="navbar-item" to="/sheets">
                   Sheets
                 </Link>
-                <Link className="navbar-item" to="/loged-in/search">
+                <Link className="navbar-item" to="/search">
                   Search
                 </Link>
               </>
@@ -52,18 +57,22 @@ const NavBar = () => {
           <div className="navbar-end">
             <div className="navbar-item">
               <div className="buttons">
-                {currentUser ? (
+                {user ? (
                   <>
-                    <Button className="button is-light" onClick={handleLogout}>
+                    <button
+                      className="button is-light"
+                      disabled={loading}
+                      onClick={handleLogout}
+                    >
                       Log Out
-                    </Button>
+                    </button>
                   </>
                 ) : (
                   <>
-                    <Link className="button is-primary" to="/auth/sign-up">
+                    <Link className="button is-primary" to="/sign-up">
                       Sign Up
                     </Link>
-                    <Link className="button is-light" to="/auth/log-in">
+                    <Link className="button is-light" to="/log-in">
                       Log In
                     </Link>
                   </>

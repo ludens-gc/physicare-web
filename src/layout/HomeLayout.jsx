@@ -2,10 +2,10 @@ import { Outlet } from "react-router-dom";
 import Footer from "../components/Footer";
 import NavBar from "../components/NavBar";
 
-const HomeLayout = ({ user }) => {
+const HomeLayout = () => {
   return (
     <>
-      <NavBar isAuthenticated={user} />
+      <NavBar />
       <main>
         <Outlet />
       </main>

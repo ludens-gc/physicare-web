@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import NavBar from "../components/NavBar";
 
-const MainLayout = ({ user }) => {
+const MainLayout = () => {
   return (
     <>
       <NavBar />

@@ -1,37 +1,24 @@
-import React, { useState } from "react";
-import Button from "../../../components/Button";
-import { useAuth } from "../../../contexts/AuthContext";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { auth } from "../../../config/firebase";
+import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 
 function LogIn() {
+  const [signInWithEmailAndPassword, loading, error] =
+    useSignInWithEmailAndPassword(auth);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
   const navigate = useNavigate();
+
+  console.log(error);
 
   async function handleSubmit(e) {
     e.preventDefault();
-    try {
-      setError("");
-      setLoading(true);
-      await login(email, password);
+    await signInWithEmailAndPassword(email, password);
+    if (!error) {
       navigate("/");
-    } catch (error) {
-      setError(`Erro ao fazer login!
-      Erro: ${error}`);
     }
-    setLoading(false);
   }
-
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  };
 
   return (
     <div className="columns is-centered">
@@ -41,7 +28,11 @@ function LogIn() {
           Faça o login para começar a utilizar nossos serviços
         </p>
         <form className="box has-shadow" onSubmit={handleSubmit}>
-          {error && <div className="notification is-danger">{error}</div>}
+          {error && (
+            <div className="notification is-danger">
+              <p>{`${error}`}</p>
+            </div>
+          )}
           <div className="field">
             <label className="label">Email</label>
             <div className="control">
@@ -50,7 +41,7 @@ function LogIn() {
                 type="email"
                 placeholder="Seu email"
                 value={email}
-                onChange={handleEmailChange}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
           </div>
@@ -62,21 +53,25 @@ function LogIn() {
                 type="password"
                 placeholder="Sua senha"
                 value={password}
-                onChange={handlePasswordChange}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
           </div>
           <div className="field is-grouped">
             <div className="control">
-              <Button disabled={loading} type="submit" className="is-primary">
+              <button
+                disabled={loading}
+                type="submit"
+                className="button is-primary"
+              >
                 Login
-              </Button>
+              </button>
             </div>
             <div className="control">
-              <Link to="/auth/sign-up">
-                <Button type="button" className="is-link">
+              <Link to="/sign-up">
+                <button type="button" className="button is-link">
                   Cadastrar-se
-                </Button>
+                </button>
               </Link>
             </div>
           </div>
